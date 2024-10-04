@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.245">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Declan Bradley">
+<meta name="dcterms.date" content="2024-10-04">
+<meta name="keywords" content="data collection, web scraping, browser automation">
+<meta name="description" content="Introduction and simple examples for live web scraping in R.">
+
+<title>Live Scraping With R</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./best-practices-data-collection.html" rel="next">
+<link href="./browser_automation.html" rel="prev">
+<link href="./assets/favicon/favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<meta property="og:title" content="Live Scraping With R">
+<meta property="og:description" content="Introduction, case studies, and exercises for automating browsers.">
+<meta property="og:image" content="https://declanrjb.github.io/inspect-element/assets/inspect-element-logo.jpg">
+<meta property="og:site-name" content="Inspect Element">
+<meta property="og:locale" content="us_EN">
+<meta name="twitter:title" content="Live Scraping With R">
+<meta name="twitter:description" content="Introduction and simple examples for live web scraping in R.">
+<meta name="twitter:image" content="https://declanrjb.github.io/inspect-element/assets/inspect-element-logo.jpg">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-title">Live Scraping With R</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Inspect Element</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/declanrjb/inspect-element" title="Source Code" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./start.html" class="sidebar-item-text sidebar-link">Planning investigations</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./checklist.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Checklist</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./build-your-own-datasets.html" class="sidebar-item-text sidebar-link">Build your own datasets</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./apis.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Undocumented APIs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./browser_automation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Browser automation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./live_webscraping.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Live Scraping With R</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./best-practices-data-collection.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Best practices</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Appendices</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">References</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#intro" id="toc-intro" class="nav-link active" data-scroll-target="#intro">Intro</a>
+  <ul class="collapse">
+  <li><a href="#installations" id="toc-installations" class="nav-link" data-scroll-target="#installations">Installations</a></li>
+  </ul></li>
+  <li><a href="#building-a-scraper" id="toc-building-a-scraper" class="nav-link" data-scroll-target="#building-a-scraper">Building a Scraper</a>
+  <ul class="collapse">
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">Getting Started</a></li>
+  <li><a href="#retrieving-the-first-table" id="toc-retrieving-the-first-table" class="nav-link" data-scroll-target="#retrieving-the-first-table">Retrieving the First Table</a></li>
+  <li><a href="#data-cleaning" id="toc-data-cleaning" class="nav-link" data-scroll-target="#data-cleaning">Data Cleaning</a></li>
+  <li><a href="#retrieving-all-the-tables" id="toc-retrieving-all-the-tables" class="nav-link" data-scroll-target="#retrieving-all-the-tables">Retrieving all the Tables</a></li>
+  </ul></li>
+  <li><a href="#citation" id="toc-citation" class="nav-link" data-scroll-target="#citation">Citation</a>
+  <ul class="collapse">
+  <li><a href="#acknowledgements" id="toc-acknowledgements" class="nav-link" data-scroll-target="#acknowledgements">Acknowledgements</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.dev/declanrjb/inspect-element/blob/main/live_webscraping.ipynb" class="toc-action">Edit this page</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block"><span class="chapter-title">Live Scraping With R</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Declan Bradley </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 4, 2024</p>
+    </div>
+  </div>
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">October 4, 2024</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+</header>
+
+<p>Live web scraping is a handy tool in any data journalist’s toolbox — one more powerful than traditional scraping, but easier to implement than browser automation with Selenium or Playwright.</p>
+<p>In this tutorial, I’ll cover simple live scraping techniques using the <a href="https://rvest.tidyverse.org/reference/read_html_live.html">rvest</a> library of the R programming language. No knowledge of R is assumed, but those without any prior familiarity with the language may consider starting with Python-based browser automation.</p>
+<div class="callout-note callout callout-style-simple">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>The R language can be more difficult than Python for beginning scrapers, and parts of the rvest library covered here are currently in the <strong>experimental</strong> stage of their lifecycle — meaning that they are actively under development and may contain bugs. While I find the tools they provide elegant and powerful compared to their Python equivalents, everything done here can be done equally using Leon’s excellent <a href="https://inspectelement.org/browser_automation.html">browser automation tutorial</a>.</p>
+</div>
+</div>
+</div>
+<section id="intro" class="level1">
+<h1>Intro</h1>
+<p>Browser automation can feel like magic, but it often requires thinking about a page from the perspective of a browser. R takes a human-centered approach. Behind the scenes, the code we write here will run an automated browser much like those demonstrated in the <a href="https://inspectelement.org/browser_automation.html">browser automation tutorial</a>. But, unless called for, it will remain invisible, and we’ll be able to read in data more intuitively.</p>
+<section id="installations" class="level2">
+<h2 class="anchored" data-anchor-id="installations">Installations</h2>
+<p>Before getting started, make sure you have a copy of the Google Chrome browser installed in order to run Chromote. If using the R language for the first time, install the latest version of R <a href="https://www.r-project.org/">here</a>. I recommend also installing <a href="https://posit.co/download/rstudio-desktop/">RStudio</a>, an R-focused IDE.</p>
+</section>
+</section>
+<section id="building-a-scraper" class="level1">
+<h1>Building a Scraper</h1>
+<section id="getting-started" class="level2">
+<h2 class="anchored" data-anchor-id="getting-started">Getting Started</h2>
+<p>To get started, do one of the following:</p>
+<ol type="1">
+<li><p>Open RStudio (recommended)</p>
+<ul>
+<li><p>Create a new project titled live-scraping-demo</p></li>
+<li><p>Create an R script called scrape.R</p></li>
+</ul></li>
+<li><p>Or, open a new Jupyter Notebook and create an R cell</p></li>
+<li><p>Or, (Mac users) open an R session from the Terminal by typing the ‘R’ command</p></li>
+</ol>
+<p>We’re now ready to run our first commands, which will install the libraries we need to complete the rest of the project. These libraries are large packages of pre-written code, largely created by Posit Chief Scientist and R developer Hadley Wickham. This tutorial is in part based on Hadley’s excellent NICAR session on live scraping, which you can find <a href="https://github.com/hadley/web-scraping">here</a>.</p>
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># General tools for the R language</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"tidyverse"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Web scraping tools</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"rvest"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To access these libraries, we’ll have to call them from the body of our R script. Add these lines to your scrape.R file.</p>
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rvest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now that we have the libraries we need, we’re ready to start scraping. For demonstration purposes, we’ll be collecting data from the <a href="https://www.forbes.com/top-colleges/"><em>Forbes</em> rankings of U.S. colleges</a>, but these same techniques can be applied to a wide range of sites. Let’s start with the simplest possible scraper: specifying a URL, and reading in that page so that we can work with it. We’ll progressively revise this code throughout the tutorial until we’ve collected all the data we need.</p>
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="137">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># retrieve the page</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>page <span class="ot">&lt;-</span> <span class="fu">read_html</span>(<span class="st">"https://www.forbes.com/top-colleges/"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s print out the first few lines of the page to verify that we have the right one.</p>
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="138">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>page</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{html_document}
+&lt;html&gt;
+[1] &lt;head&gt;\n&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8 ...
+[2] &lt;body&gt;\n&lt;div id="__next"&gt;\n&lt;div class="ForbesHeader_mainHeader__XuFcZ"&gt;&lt;h ...</code></pre>
+</div>
+</div>
+<p>Everything looks good here. Time to start retrieving our data.</p>
+</section>
+<section id="retrieving-the-first-table" class="level2">
+<h2 class="anchored" data-anchor-id="retrieving-the-first-table">Retrieving the First Table</h2>
+<p>Before writing any more code, we’ll need to identify the HTML elements that contain our data. Open your browser’s developer tools. (In most standard browsers, this can be done by clicking the dot menu in the upper right and selecting “Developer Tools.”) I recommend keeping the developer panel open in a split-screen window in order to compare the page source to its visible elements. Using the selector tool in the upper left, click on the central table that contains college listings.</p>
+<figure class="figure">
+<img src="assets/forbes_table-selection.png" alt="https://themarkup.org/google-the-giant/2020/07/28/how-we-analyzed-google-search-results-web-assay-parsing-tool#google-search-flow" style="width:100%" class="figure-img">
+</figure>
+<p>The table we want has the class <code>ListTable_listTable__-N5U5</code>. Typically, it’s best practice to use the most specific tag available when selecting elements to avoid mixups. There are tradeoffs to that approach, however. The designation <code>-N5U5</code> looks largely random — if Forbes updates this page to use some other signifier, our code will stop working.</p>
+<p>Instead, I’ll recommend a simpler approach. Since the table we’re interested in is the only one on the page (that we can see), we can simply select the tag <code>table</code>. Let’s try it.</p>
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="139">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>page <span class="sc">|&gt;</span> <span class="fu">html_nodes</span>(<span class="st">"table"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{xml_nodeset (0)}</code></pre>
+</div>
+</div>
+<p>The code returns no results. Why? Despite the fact that we can see the table in the browser, it’s not present in the HTML we accessed with the read_html command. That’s because this is a “live”, or dynamic, page, one that renders significant parts of its layout — including our data — using JavaScript. Normally, scraping such a page would require browser automation. But the power of rvest will allow us to fix the problem by changing only one command.</p>
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="140">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>page <span class="ot">&lt;-</span> <span class="fu">read_html_live</span>(<span class="st">"https://www.forbes.com/top-colleges/"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>page <span class="sc">|&gt;</span> <span class="fu">html_nodes</span>(<span class="st">"table"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{xml_nodeset (1)}
+[1] &lt;table class="ListTable_listTable__-N5U5"&gt;\n&lt;thead&gt;&lt;tr&gt;\n&lt;th class="ListT ...</code></pre>
+</div>
+</div>
+<p>When we use the experimental read_html_live command instead of the traditional read_html, the code works as expected. We can now access the table, and all other data on this dynamic page, as a human user would. Let’s save the data we retrieved as an R dataframe.</p>
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="141">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> page <span class="sc">|&gt;</span> <span class="fu">html_node</span>(<span class="st">"table"</span>) <span class="sc">|&gt;</span> <span class="fu">html_table</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We’ve now retrieved the data we set out to obtain in only five lines. The complete code for this scraper can be written as:</p>
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="142">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rvest)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>page <span class="ot">&lt;-</span> <span class="fu">read_html_live</span>(<span class="st">"https://www.forbes.com/top-colleges/"</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.sleep</span>(<span class="dv">1</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> page <span class="sc">|&gt;</span> <span class="fu">html_node</span>(<span class="st">"table"</span>) <span class="sc">|&gt;</span> <span class="fu">html_table</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="data-cleaning" class="level2">
+<h2 class="anchored" data-anchor-id="data-cleaning">Data Cleaning</h2>
+<p>Unfortunately, the table we’ve retrieved isn’t easy to work with. While largely correct, it contains the long-form callouts that <em>Forbes</em> includes for some institutions, such as Princeton. While these are interesting, they don’t belong in our dataframe. Let’s filter them out.</p>
+<p>There are many possible approaches to removing junk data, but we’ll seek the simplest. By closely examining the table, we can see that the listings we’re interested in all have a numeric rank in the ‘Rank’ column, while the callout has a rank of NA. Let’s filter the dataframe to only include listings with a non-NA rank. We’ll use the filter command, which returns the rows of a dataframe for which the provided expression is <code>True</code>. We’ll specify the Rank column, and require that the Rank value for each row evaluate to some non-NA value.</p>
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="143">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Rank))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="retrieving-all-the-tables" class="level2">
+<h2 class="anchored" data-anchor-id="retrieving-all-the-tables">Retrieving all the Tables</h2>
+<p>Our data table is now complete. Unfortunately, we’ve only collected the first 50 entries from <em>Forbes’</em> list. The <em>Forbes</em> site is paginated, meaning we’ll have to click to a new page to get more data. Luckily, rvest provides a simple syntax for this.</p>
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="144">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>page<span class="sc">$</span><span class="fu">click</span>(<span class="st">'button[aria-label="Next"]'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>With only one line of code, we can select the ‘Next’ button at the bottom of the page and click it. If we rerun our code for scraping the data table, we’ll see that we’re now collecting the next page of data.</p>
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="145">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>page <span class="sc">|&gt;</span> <span class="fu">html_node</span>(<span class="st">"table"</span>) <span class="sc">|&gt;</span> <span class="fu">html_table</span>() <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Rank)) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A tibble: 6 × 8</caption>
+<thead>
+    <tr><th scope="col">Rank</th><th scope="col">Name</th><th scope="col">State</th><th scope="col">Type</th><th scope="col">Av. Grant Aid</th><th scope="col">Av. Debt</th><th scope="col">Median 10-year Salary</th><th scope="col">Financial Grade</th></tr>
+    <tr><th scope="col">&lt;int&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><td>51</td><td>Middlebury College </td><td>VT</td><td>Private not-for-profit</td><td>$56,639</td><td>$8,541 </td><td>$139,500</td><td>A-</td></tr>
+    <tr><td>52</td><td>Tufts University   </td><td>MA</td><td>Private not-for-profit</td><td>$51,613</td><td>$7,034 </td><td>$144,400</td><td>B+</td></tr>
+    <tr><td>53</td><td>Boston University  </td><td>MA</td><td>Private not-for-profit</td><td>$51,565</td><td>$10,425</td><td>$144,400</td><td>B </td></tr>
+    <tr><td>54</td><td>Wesleyan University</td><td>CT</td><td>Private not-for-profit</td><td>$59,825</td><td>$9,716 </td><td>$149,200</td><td>B+</td></tr>
+    <tr><td>55</td><td><span style="white-space:pre-wrap">William &amp; Mary     </span></td><td>VA</td><td><span style="white-space:pre-wrap">Public                </span></td><td>$15,134</td><td>$8,882 </td><td>$134,200</td><td><span style="white-space:pre-wrap">  </span></td></tr>
+    <tr><td>56</td><td>Barnard College    </td><td>NY</td><td>Private not-for-profit</td><td>$53,817</td><td>$7,339 </td><td>$149,300</td><td>A-</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Unfortunately, our new data table has the same data quality problems as the first one. Let’s define a simple function for collecting ranking data from a page so that we don’t have to repeat ourselves.</p>
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="146">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>get_college_rankings <span class="ot">&lt;-</span> <span class="cf">function</span>(page) {</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    df <span class="ot">&lt;-</span> page <span class="sc">|&gt;</span> <span class="fu">html_node</span>(<span class="st">"table"</span>) <span class="sc">|&gt;</span> <span class="fu">html_table</span>()</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    df <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Rank))</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(df)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="fu">get_college_rankings</span>(page) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A tibble: 6 × 8</caption>
+<thead>
+    <tr><th scope="col">Rank</th><th scope="col">Name</th><th scope="col">State</th><th scope="col">Type</th><th scope="col">Av. Grant Aid</th><th scope="col">Av. Debt</th><th scope="col">Median 10-year Salary</th><th scope="col">Financial Grade</th></tr>
+    <tr><th scope="col">&lt;int&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><td>51</td><td>Middlebury College </td><td>VT</td><td>Private not-for-profit</td><td>$56,639</td><td>$8,541 </td><td>$139,500</td><td>A-</td></tr>
+    <tr><td>52</td><td>Tufts University   </td><td>MA</td><td>Private not-for-profit</td><td>$51,613</td><td>$7,034 </td><td>$144,400</td><td>B+</td></tr>
+    <tr><td>53</td><td>Boston University  </td><td>MA</td><td>Private not-for-profit</td><td>$51,565</td><td>$10,425</td><td>$144,400</td><td>B </td></tr>
+    <tr><td>54</td><td>Wesleyan University</td><td>CT</td><td>Private not-for-profit</td><td>$59,825</td><td>$9,716 </td><td>$149,200</td><td>B+</td></tr>
+    <tr><td>55</td><td><span style="white-space:pre-wrap">William &amp; Mary     </span></td><td>VA</td><td><span style="white-space:pre-wrap">Public                </span></td><td>$15,134</td><td>$8,882 </td><td>$134,200</td><td><span style="white-space:pre-wrap">  </span></td></tr>
+    <tr><td>56</td><td>Barnard College    </td><td>NY</td><td>Private not-for-profit</td><td>$53,817</td><td>$7,339 </td><td>$149,300</td><td>A-</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>We can now retrieve data from each page of results with only one command. Let’s use that new shortcut to scrape in all ten pages of data. Start by scraping in the first page.</p>
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="109">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>page <span class="ot">&lt;-</span> <span class="fu">read_html_live</span>(<span class="st">"https://www.forbes.com/top-colleges/"</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.sleep</span>(<span class="dv">1</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">get_college_rankings</span>(page)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now, we’ll loop through the remaining pages, adding each new dataset to the main table before clicking the next button. We’ll stop the first time we find that the next button has been disabled, indicating that there are no more pages available.</p>
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="147">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> (<span class="fu">is.na</span>(page <span class="sc">|&gt;</span> <span class="fu">html_node</span>(<span class="st">'button[aria-label="Next"]'</span>) <span class="sc">|&gt;</span> <span class="fu">html_attr</span>(<span class="st">"disabled"</span>))) {</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    page<span class="sc">$</span><span class="fu">click</span>(<span class="st">'button[aria-label="Next"]'</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Sys.sleep</span>(<span class="dv">1</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    df <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df, <span class="fu">get_college_rankings</span>(page))</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>As a final step, we’ll export the data we collected to a CSV file for later use. Our complete program for scraping the <em>Forbes</em> college rankings can be written in only fifteen lines:</p>
+<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;r&quot;}" data-execution_count="132">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rvest)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>get_college_rankings <span class="ot">&lt;-</span> <span class="cf">function</span>(page) {</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    df <span class="ot">&lt;-</span> page <span class="sc">|&gt;</span> <span class="fu">html_node</span>(<span class="st">"table"</span>) <span class="sc">|&gt;</span> <span class="fu">html_table</span>()</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    df <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Rank))</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(df)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>page <span class="ot">&lt;-</span> <span class="fu">read_html_live</span>(<span class="st">"https://www.forbes.com/top-colleges/"</span>)</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.sleep</span>(<span class="dv">1</span>)</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">get_college_rankings</span>(page)</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> (<span class="fu">is.na</span>(page <span class="sc">|&gt;</span> <span class="fu">html_node</span>(<span class="st">'button[aria-label="Next"]'</span>) <span class="sc">|&gt;</span> <span class="fu">html_attr</span>(<span class="st">"disabled"</span>))) {</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    page<span class="sc">$</span><span class="fu">click</span>(<span class="st">'button[aria-label="Next"]'</span>)</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Sys.sleep</span>(<span class="dv">1</span>)</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    df <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df, <span class="fu">get_college_rankings</span>(page))</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(df,<span class="st">"forbes-rankings.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>As I wrote above, read_html_live is an experimental tool, and more features are in active development. For more information, see Hadley Wickham’s documentation, including <a href="https://rvest.tidyverse.org/reference/read_html_live.html">a summary of live scraping in rvest</a> and <a href="https://rvest.tidyverse.org/reference/LiveHTML.html">an overview of commands for interacting with a live page’s UI</a>. Feel free to reach out to me at <a href="mailto:declanrjb@gmail.com">declanrjb@gmail.com</a> with any questions or suggestions for future tutorials.</p>
+</section>
+</section>
+<section id="citation" class="level1">
+<h1>Citation</h1>
+<p>To cite this chapter, please use the following BibTex entry:</p>
+<pre>@incollection{inspect2023browser,
+  author    = {Bradley, Declan},
+  title     = {Live Scraping With R},
+  booktitle = {Inspect Element: A practitioner's guide to auditing algorithms and hypothesis-driven investigations},
+  year      = {2024},
+  editor    = {Yin, Leon and Sapiezynski, Piotr and Raji, Inioluwa Deborah},
+  note      = {\url{https://inspectelement.org}}
+}
+</pre>
+<section id="acknowledgements" class="level2">
+<h2 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h2>
+<p>Thank you to Leon Yin for publishing this tutorial, and to Hadley Wickham for developing these tools and taking the time to teach journalists like me how to use them.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./browser_automation.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Browser automation</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./best-practices-data-collection.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-title">Best practices</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

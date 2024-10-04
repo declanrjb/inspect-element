@@ -2,10 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.335">
+<meta name="generator" content="quarto-1.2.245">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Leon Yin">
 <meta name="dcterms.date" content="2023-08-13">
 <meta name="keywords" content="pitching stories, experiment planning">
 <meta name="description" content="Experiment checklist">
@@ -67,12 +68,12 @@ ul.task-list li input[type="checkbox"] {
 
 <meta property="og:title" content="Pitching Hypothesis-Driven Data Investigations">
 <meta property="og:description" content="Answer these questions to bullet-proof your story">
-<meta property="og:image" content="https://inspectelement.org/assets/inspect-element-logo.jpg">
+<meta property="og:image" content="https://declanrjb.github.io/inspect-element/assets/inspect-element-logo.jpg">
 <meta property="og:site-name" content="Inspect Element">
 <meta property="og:locale" content="us_EN">
 <meta name="twitter:title" content="Pitching Hypothesis-Driven Data Investigations">
 <meta name="twitter:description" content="Answer these questions to bullet-proof your story">
-<meta name="twitter:image" content="https://inspectelement.org/assets/inspect-element-logo.jpg">
+<meta name="twitter:image" content="https://declanrjb.github.io/inspect-element/assets/inspect-element-logo.jpg">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -97,7 +98,7 @@ ul.task-list li input[type="checkbox"] {
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Inspect Element</a> 
         <div class="sidebar-tools-main">
-    <a href="https://github.com/yinleon/inspect-element" title="Source Code" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+    <a href="https://github.com/declanrjb/inspect-element" title="Source Code" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
 </div>
     </div>
       </div>
@@ -148,6 +149,11 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./live_webscraping.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Live Scraping With R</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./best-practices-data-collection.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Best practices</span></a>
   </div>
 </li>
@@ -180,7 +186,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#checklist" id="toc-checklist" class="nav-link active" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#acknowledgements" id="toc-acknowledgements" class="nav-link" data-scroll-target="#acknowledgements">Acknowledgements</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.dev/yinleon/inspect-element/blob/main/checklist.ipynb" class="toc-action">Edit this page</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.dev/declanrjb/inspect-element/blob/main/checklist.ipynb" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -194,6 +200,12 @@ ul.task-list li input[type="checkbox"] {
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Leon Yin </p>
+          </div>
+  </div>
     
     <div>
     <div class="quarto-title-meta-heading">Published</div>
@@ -209,7 +221,7 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 <p>This document asks essential questions to plan data experiments. Revisit these questions throughout your reporting, and use them to communicate your intentions and limitations with your editor. It will help determine if a story is worth pursuing by giving an estimation of time, complexity, and impact.</p>
-<p>As a side benefit, these questions form the backbone of a methodology to get reviewed by experts, as well as the subject of your investigation.</p>
+<p>As a side benefit, these questions form the backbone of a methodology to get reviewed by experts, as well as the target of your investigation.</p>
 <div class="callout-note callout callout-style-simple">
 <div class="callout-body d-flex">
 <div class="callout-icon-container">
@@ -233,7 +245,7 @@ ul.task-list li input[type="checkbox"] {
 <p><strong>9. What are the limitations of the dataset(s) you are proposing to use? How will you test its accuracy?</strong> <br> <em>Every dataset is imperfect and carries inherent assumptions. How will you assure what you’re writing is aligned with your dataset? How will you bulletproof that dataset?</em></p>
 <p><strong>10. Do you need to classify the data for your experiment? If so, please describe how you propose doing that. Are there outside classifications or experts you can lean on? What are the limitations of your classification method?</strong> <br> <em>Seldom is the outcome you want to measure already encoded in a column. Instead, you need to make that assessment.</em></p>
 <p><strong>11. How will you analyze the data? What statistical tests will run? Please list any limitations to your proposed method and any alternatives.</strong> <br> <em>Start with simplicity.</em></p>
-<p><strong>12. What specific sentences will you be able to write based on your findings? What’s the headline? What’s the lede?</strong> <br> <em>Use this space to brainstorm how you’ll frame your findings. This helps make your findings tangible. I use TK’s at this step.</em></p>
+<p><strong>12. What specific sentences will you be able to write based on your findings? What’s the lede? What’s the nutgraph?</strong> <br> <em>Use this space to brainstorm how you’ll frame your findings. This helps make your findings tangible. I use TK’s at this step.</em></p>
 <p><strong>13. Can you imagine the charts or other visualizations this data will produce?</strong> <br> <em>How will you communicate your findings visually?</em></p>
 </section>
 <section id="acknowledgements" class="level2">
